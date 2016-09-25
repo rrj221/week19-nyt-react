@@ -31,6 +31,14 @@ module.exports = function (app) {
 	})
 
 
+	app.delete('/article/delete/:id', function (req, res) {
+		console.log(req.params.id);
+		Article.findOneAndRemove({
+			_id: req.params.id
+		}).then(function () {
+			res.send('hello');
+		});
 
+	})
 
 } 

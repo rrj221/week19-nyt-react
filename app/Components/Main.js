@@ -28,7 +28,8 @@ var Main = React.createClass({
 			},
 			results: [],
 			savedArticles: [],
-			savedCount: 0
+			savedCount: 0,
+			articleToDeleteId: ''
 		}
 	},
 
@@ -57,6 +58,12 @@ var Main = React.createClass({
 		});
 	},
 
+	deleteArticle: function(articleId) {
+		this.setState({
+			articleToDeleteId: articleId,
+		});
+	},
+
 	componentDidUpdate: function(prevProps, prevStates) {
 
 		//search new york times
@@ -74,20 +81,39 @@ var Main = React.createClass({
 		}
 
 		//save article to db
-		if (prevStates.savedArticles !== this.state.savedArticles && this.state.savedCount !== 0) {
-			console.log('i will try and probably fail to save now');
+		if (prevStates.savedArticles !== this.state.savedArticles && 
+			this.state.savedCount !== prevStates.savedCount) {
 
-			var articleToSave = this.state.savedArticles[this.state.savedArticles.length - 1];
+				var articleToSave = this.state.savedArticles[this.state.savedArticles.length - 1];
 
-			console.log('articleToSave ------------');
-			console.log(articleToSave);
+				console.log('articleToSave ------------');
+				console.log(articleToSave);
 
 
-			//i have to make sure it hasn't been saved first
-			helpers.saveToMongo(articleToSave).then(function(data) {
-				console.log('saved not');
-				console.log(data);
-			}.bind(this));
+				//i have to make sure it hasn't been saved first
+				helpers.saveToMongo(articleToSave).then(function(data) {
+					console.log('saved not');
+					console.log(data);
+				}.bind(this));
+		}
+
+		//delete article
+		if (prevStates.articleToDeleteId !== this.state.articleToDeleteId) {
+			helpers.deleteArticleRoute(this.state.articleToDeleteId)
+				.then(function(results) {
+					console.log('results', results);
+
+					//display saved articles after delete
+					console.log('i would like to reload the articles now')
+					helpers.getSavedArticles()
+						.then(function(results) {
+							var savedArticlesArr = results.data;
+							console.log(savedArticlesArr);
+							this.setState({
+								savedArticles: savedArticlesArr
+							})
+						}.bind(this));
+				}.bind(this));
 		}
 	},
 
@@ -127,7 +153,7 @@ var Main = React.createClass({
 
 					{/*<!-- Saved -->*/}
 					<div className='saved'>
-						<Saved savedArticles={this.state.savedArticles}/>
+						<Saved savedArticles={this.state.savedArticles} deleteArticle={this.deleteArticle}/>
 					</div>
 
 				</div>

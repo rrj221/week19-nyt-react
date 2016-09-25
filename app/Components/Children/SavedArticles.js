@@ -25,9 +25,11 @@ var SavedArticles = React.createClass({
 							{
 								savedArticles.map((article) =>
 									<SavedArticle
+										id={article._id}
 										title={article.title}
 										date={article.date}
 										url={article.url}
+										deleteArticle={this.props.deleteArticle}
 										// saveArticle={saveArticle}
 									/>
 								)

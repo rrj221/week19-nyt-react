@@ -25448,7 +25448,8 @@
 				},
 				results: [],
 				savedArticles: [],
-				savedCount: 0
+				savedCount: 0,
+				articleToDeleteId: ''
 			};
 		},
 
@@ -25477,6 +25478,12 @@
 			});
 		},
 
+		deleteArticle: function deleteArticle(articleId) {
+			this.setState({
+				articleToDeleteId: articleId
+			});
+		},
+
 		componentDidUpdate: function componentDidUpdate(prevProps, prevStates) {
 
 			//search new york times
@@ -25493,8 +25500,7 @@
 			}
 
 			//save article to db
-			if (prevStates.savedArticles !== this.state.savedArticles && this.state.savedCount !== 0) {
-				console.log('i will try and probably fail to save now');
+			if (prevStates.savedArticles !== this.state.savedArticles && this.state.savedCount !== prevStates.savedCount) {
 
 				var articleToSave = this.state.savedArticles[this.state.savedArticles.length - 1];
 
@@ -25505,6 +25511,23 @@
 				helpers.saveToMongo(articleToSave).then(function (data) {
 					console.log('saved not');
 					console.log(data);
+				}.bind(this));
+			}
+
+			//delete article
+			if (prevStates.articleToDeleteId !== this.state.articleToDeleteId) {
+				helpers.deleteArticleRoute(this.state.articleToDeleteId).then(function (results) {
+					console.log('results', results);
+
+					//display saved articles after delete
+					console.log('i would like to reload the articles now');
+					helpers.getSavedArticles().then(function (results) {
+						var savedArticlesArr = results.data;
+						console.log(savedArticlesArr);
+						this.setState({
+							savedArticles: savedArticlesArr
+						});
+					}.bind(this));
 				}.bind(this));
 			}
 		},
@@ -25554,7 +25577,7 @@
 					React.createElement(
 						'div',
 						{ className: 'saved' },
-						React.createElement(Saved, { savedArticles: this.state.savedArticles })
+						React.createElement(Saved, { savedArticles: this.state.savedArticles, deleteArticle: this.deleteArticle })
 					)
 				)
 			);
@@ -30067,6 +30090,8 @@
 		displayName: 'SavedArticles',
 
 		render: function render() {
+			var _this = this;
+
 			var savedArticles = this.props.savedArticles;
 			return React.createElement(
 				'div',
@@ -30097,9 +30122,11 @@
 							{ className: 'list-group-item' },
 							savedArticles.map(function (article) {
 								return React.createElement(SavedArticle, {
+									id: article._id,
 									title: article.title,
 									date: article.date,
-									url: article.url
+									url: article.url,
+									deleteArticle: _this.props.deleteArticle
 									// saveArticle={saveArticle}
 								});
 							})
@@ -30127,6 +30154,15 @@
 		// saveClick: function () {
 		// 	this.props.saveArticle(this.props.title, this.props.date, this.props.url);
 		// },
+
+		// getInitialState: function () {
+		// 	return {
+		// 		articleToDeleteId: '' 
+		// 	}
+		// },
+		handleDeleteClick: function handleDeleteClick() {
+			this.props.deleteArticle(this.props.id);
+		},
 		render: function render() {
 			var date = this.props.date;
 			if (date) {
@@ -30150,8 +30186,8 @@
 				),
 				React.createElement(
 					'button',
-					{ type: 'button', className: 'pull-right', onClick: '' },
-					'Add Note'
+					{ type: 'button', className: 'pull-right', onClick: this.handleDeleteClick },
+					'Delete'
 				)
 			);
 		}
@@ -30249,6 +30285,19 @@
 			}).then(function (results) {
 				console.log('returning now');
 				console.log('results');
+				return results;
+			});
+		},
+		deleteArticleRoute: function deleteArticleRoute(id) {
+			console.log(id);
+			console.log('searching now');
+			var url = '/article/delete/' + id;
+			console.log(url);
+			return axios({
+				url: url,
+				method: 'delete'
+			}).then(function (results) {
+				console.log('returning now');
 				return results;
 			});
 		}

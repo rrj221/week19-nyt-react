@@ -86,6 +86,19 @@ var helpers = {
 			console.log('results');
 			return results;
 		})
+	},
+	deleteArticleRoute: function(id) {
+		console.log(id);
+		console.log('searching now');
+		var url = '/article/delete/' + id
+		console.log(url);
+		return axios({
+			url: url,
+			method: 'delete',
+		}).then(function (results) {
+			console.log ('returning now');
+			return results;
+		})
 	}
 }
 
