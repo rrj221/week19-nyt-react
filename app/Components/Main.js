@@ -8,7 +8,7 @@ var jumboStyle = {
 ///////include subcomponents here (require)
 var Search = require('./Children/Search.js');
 var Results = require('./Children/Results.js');
-var Saved = require('./Children/SavedArticles.js');
+var SavedArticles = require('./Children/SavedArticles.js');
 
 
 //helper function (nyt api stuffs)
@@ -62,6 +62,12 @@ var Main = React.createClass({
 		this.setState({
 			articleToDeleteId: articleId,
 		});
+	},
+
+	addNote: function(note, articleId) {
+		console.log('i am in main now');
+		console.log(note);
+		helpers.saveNoteToMongo(note, articleId);
 	},
 
 	componentDidUpdate: function(prevProps, prevStates) {
@@ -153,7 +159,11 @@ var Main = React.createClass({
 
 					{/*<!-- Saved -->*/}
 					<div className='saved'>
-						<Saved savedArticles={this.state.savedArticles} deleteArticle={this.deleteArticle}/>
+						<SavedArticles 
+							savedArticles={this.state.savedArticles} 
+							deleteArticle={this.deleteArticle}
+							addNote={this.addNote}
+						/>
 					</div>
 
 				</div>

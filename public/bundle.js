@@ -25427,7 +25427,7 @@
 	///////include subcomponents here (require)
 	var Search = __webpack_require__(223);
 	var Results = __webpack_require__(224);
-	var Saved = __webpack_require__(228);
+	var SavedArticles = __webpack_require__(228);
 
 	//helper function (nyt api stuffs)
 	var helpers = __webpack_require__(230);
@@ -25482,6 +25482,12 @@
 			this.setState({
 				articleToDeleteId: articleId
 			});
+		},
+
+		addNote: function addNote(note, articleId) {
+			console.log('i am in main now');
+			console.log(note);
+			helpers.saveNoteToMongo(note, articleId);
 		},
 
 		componentDidUpdate: function componentDidUpdate(prevProps, prevStates) {
@@ -25577,7 +25583,11 @@
 					React.createElement(
 						'div',
 						{ className: 'saved' },
-						React.createElement(Saved, { savedArticles: this.state.savedArticles, deleteArticle: this.deleteArticle })
+						React.createElement(SavedArticles, {
+							savedArticles: this.state.savedArticles,
+							deleteArticle: this.deleteArticle,
+							addNote: this.addNote
+						})
 					)
 				)
 			);
@@ -30126,7 +30136,8 @@
 									title: article.title,
 									date: article.date,
 									url: article.url,
-									deleteArticle: _this.props.deleteArticle
+									deleteArticle: _this.props.deleteArticle,
+									addNote: _this.props.addNote
 									// saveArticle={saveArticle}
 								});
 							})
@@ -30155,13 +30166,24 @@
 		// 	this.props.saveArticle(this.props.title, this.props.date, this.props.url);
 		// },
 
-		// getInitialState: function () {
-		// 	return {
-		// 		articleToDeleteId: '' 
-		// 	}
-		// },
+		getInitialState: function getInitialState() {
+			return {
+				noteText: ''
+			};
+		},
 		handleDeleteClick: function handleDeleteClick() {
 			this.props.deleteArticle(this.props.id);
+		},
+		handleChange: function handleChange(event) {
+			console.log('type');
+			this.setState({
+				noteText: event.target.value
+			});
+		},
+		newNoteSubmit: function newNoteSubmit(event) {
+			event.preventDefault();
+			console.log('new note');
+			this.props.addNote(this.state.noteText, this.props.id);
 		},
 		render: function render() {
 			var date = this.props.date;
@@ -30171,23 +30193,63 @@
 
 			console.log(dateNeat);
 			return React.createElement(
-				'li',
-				{ className: 'result list-group-item' },
+				'div',
+				null,
 				React.createElement(
-					'span',
-					null,
+					'li',
+					{ className: 'result list-group-item' },
 					React.createElement(
-						'a',
-						{ href: this.props.url },
-						this.props.title
+						'span',
+						null,
+						React.createElement(
+							'a',
+							{ href: this.props.url },
+							this.props.title
+						),
+						' ',
+						dateNeat
 					),
-					' ',
-					dateNeat
+					React.createElement(
+						'button',
+						{ type: 'button', className: 'pull-right', onClick: this.handleDeleteClick },
+						'Delete'
+					)
 				),
 				React.createElement(
-					'button',
-					{ type: 'button', className: 'pull-right', onClick: this.handleDeleteClick },
-					'Delete'
+					'li',
+					{ className: 'newNote list-group-item' },
+					React.createElement(
+						'form',
+						{ onSubmit: this.newNoteSubmit },
+						React.createElement(
+							'div',
+							{ className: 'row' },
+							React.createElement(
+								'div',
+								{ className: 'col-lg-12' },
+								React.createElement(
+									'div',
+									{ className: 'input-group input-group' },
+									React.createElement('input', {
+										type: 'text',
+										className: 'form-control',
+										id: 'search-church',
+										placeholder: 'Write a new note',
+										onChange: this.handleChange
+									}),
+									React.createElement(
+										'span',
+										{ className: 'input-group-btn' },
+										React.createElement(
+											'button',
+											{ className: 'btn btn-default', type: 'submit' },
+											'Add Note'
+										)
+									)
+								)
+							)
+						)
+					)
 				)
 			);
 		}
@@ -30270,9 +30332,20 @@
 		saveToMongo: function saveToMongo(articleToSave) {
 			return axios({
 				method: 'post',
-				url: '/save',
+				url: '/save/article',
 				data: {
 					articleToSave: articleToSave
+				}
+			}).then(function (results) {
+				return results;
+			});
+		},
+		saveNoteToMongo: function saveNoteToMongo(noteToSave, articleId) {
+			return axios({
+				method: 'post',
+				url: '/articles/' + articleId,
+				data: {
+					noteToSave: noteToSave
 				}
 			}).then(function (results) {
 				return results;

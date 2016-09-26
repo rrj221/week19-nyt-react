@@ -1,6 +1,7 @@
 //require stuff here from another file if i need to
 //like maybe any models
 var Article = require('../../models/article.js');
+var Note = require ('../../models/note.js');
 
 module.exports = function (app) {
 	app.get('/', function (req, res) {
@@ -8,7 +9,13 @@ module.exports = function (app) {
 		res.sendFile('./public/index.html')   //need to find path to index html
 	});
 
-	app.post('/save', function (req, res) {
+	app.get('/saved', function (req, res) {
+		Article.find({}).limit(5).sort([['_id', 'descending']]).exec(function(err, docs) {
+			res.send(docs);
+		})
+	});
+
+	app.post('/save/article', function (req, res) {
 		console.log(req.body);
 
 		Article.create({
@@ -24,21 +31,55 @@ module.exports = function (app) {
 		});
 	});
 
-	app.get('/saved', function (req, res) {
-		Article.find({}).limit(5).sort([['_id', 'descending']]).exec(function(err, docs) {
-			res.send(docs);
-		})
-	})
+	app.post('/articles/:id', function (req, res) {
+		console.log(req.body.noteToSave);
+		console.log(req.body);
+
+		var noteObj = {
+			body: req.body.noteToSave
+		}
+		var articleId = req.params.id;
+
+		var newNote = new Note(noteObj);
+
+		newNote.save(function(err, newNote) {
+			if (err) {
+				res.send(err)
+			} else {
+				Article.findOneAndUpdate(
+					{_id: articleId}, 
+					{$push: {'notes': newNote._id}}, 
+					{new: true}, 
+					function (err, article) {
+						if (err) {
+							res.send(err)
+						} else {
+							res.send(newNote)
+						}
+				});
+			}
+		});
+
+		// Note.create({
+		// 	body: req.body.noteToSave
+		// }, function (err, note) {
+		// 	if (err) {
+		// 		console.log(err);
+		// 	} else {
+		// 		res.send(note);
+		// 	}
+		// })
+	});
 
 
 	app.delete('/article/delete/:id', function (req, res) {
 		console.log(req.params.id);
 		Article.findOneAndRemove({
 			_id: req.params.id
-		}).then(function () {
-			res.send('hello');
+		}).then(function (deleted) {
+			res.json(deleted);
 		});
 
-	})
+	});
 
 } 

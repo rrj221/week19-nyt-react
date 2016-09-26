@@ -69,9 +69,20 @@ var helpers = {
 	saveToMongo: function (articleToSave) {
 		return axios({
 			method: 'post',
-			url: '/save',
+			url: '/save/article',
 			data: {
 				articleToSave
+			}
+		}).then(function (results) {
+			return results;
+		})
+	},
+	saveNoteToMongo: function (noteToSave, articleId) {
+		return axios({
+			method: 'post',
+			url: '/articles/'+articleId,
+			data: {
+				noteToSave: noteToSave,
 			}
 		}).then(function (results) {
 			return results;

@@ -30,6 +30,7 @@ var SavedArticles = React.createClass({
 										date={article.date}
 										url={article.url}
 										deleteArticle={this.props.deleteArticle}
+										addNote={this.props.addNote}
 										// saveArticle={saveArticle}
 									/>
 								)
