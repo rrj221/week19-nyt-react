@@ -101,7 +101,7 @@ var helpers = {
 	deleteArticleRoute: function(id) {
 		console.log(id);
 		console.log('searching now');
-		var url = '/article/delete/' + id
+		var url = '/articles/delete/' + id
 		console.log(url);
 		return axios({
 			url: url,

@@ -25487,7 +25487,28 @@
 		addNote: function addNote(note, articleId) {
 			console.log('i am in main now');
 			console.log(note);
-			helpers.saveNoteToMongo(note, articleId);
+			helpers.saveNoteToMongo(note, articleId).then(function (results) {
+				console.log('i got this from mongo');
+				console.log(results);
+				var newNotez = results.data;
+				var newNote = {
+					_id: results.data._id,
+					body: results.data.body
+				};
+				console.log(newNote);
+				var savedArticles = this.state.savedArticles;
+				console.log(savedArticles);
+				savedArticles.forEach(function (article, i) {
+					if (article._id === articleId) {
+						article.notes.push(newNote);
+					}
+				});
+				console.log(savedArticles);
+
+				this.setState({
+					savedArticles: savedArticles
+				});
+			}.bind(this));
 		},
 
 		componentDidUpdate: function componentDidUpdate(prevProps, prevStates) {
@@ -25519,6 +25540,17 @@
 					console.log(data);
 				}.bind(this));
 			}
+
+			//show new note
+			if (prevStates.savedArticles !== this.state.savedArticles) {}
+			// helpers.getSavedArticles()
+			// 	.then(function(results) {
+			// 		var savedArticlesArr = results.data;
+			// 		this.setState({
+			// 			savedArticles: savedArticlesArr
+			// 		})
+			// 	}.bind(this));
+
 
 			//delete article
 			if (prevStates.articleToDeleteId !== this.state.articleToDeleteId) {
@@ -30136,6 +30168,7 @@
 									title: article.title,
 									date: article.date,
 									url: article.url,
+									notes: article.notes,
 									deleteArticle: _this.props.deleteArticle,
 									addNote: _this.props.addNote
 									// saveArticle={saveArticle}
@@ -30158,6 +30191,9 @@
 
 	var React = __webpack_require__(1);
 	var moment = __webpack_require__(226);
+	var Notes = __webpack_require__(250);
+
+	var helpers = __webpack_require__(230);
 
 	var SavedArticle = React.createClass({
 		displayName: 'SavedArticle',
@@ -30250,6 +30286,11 @@
 							)
 						)
 					)
+				),
+				React.createElement(
+					'li',
+					{ className: 'notes list-group-item' },
+					React.createElement(Notes, { notes: this.props.notes })
 				)
 			);
 		}
@@ -30364,7 +30405,7 @@
 		deleteArticleRoute: function deleteArticleRoute(id) {
 			console.log(id);
 			console.log('searching now');
-			var url = '/article/delete/' + id;
+			var url = '/articles/delete/' + id;
 			console.log(url);
 			return axios({
 				url: url,
@@ -31589,6 +31630,99 @@
 	  };
 	};
 
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var Note = __webpack_require__(251);
+
+	var Notes = React.createClass({
+		displayName: 'Notes',
+
+		render: function render() {
+			var notes = this.props.notes;
+			// var saveArticle = this.props.saveArticle;
+			console.log('articles');
+			console.log(notes);
+
+			return React.createElement(
+				'div',
+				{ className: 'row' },
+				React.createElement(
+					'div',
+					{ className: 'col-sm-12' },
+					React.createElement(
+						'div',
+						{ className: 'panel-heading' },
+						React.createElement(
+							'h3',
+							{ className: 'panel-title' },
+							React.createElement(
+								'strong',
+								null,
+								React.createElement('i', { className: 'fa fa-table' }),
+								'   Notes'
+							)
+						)
+					),
+					React.createElement(
+						'ul',
+						{ className: 'list-group-item' },
+						notes.map(function (note) {
+							return React.createElement(Note, {
+								body: note.body
+								// date={article.date}
+								// url={article.url}
+								// saveArticle={saveArticle}
+							});
+						})
+					)
+				)
+			);
+		}
+	});
+
+	module.exports = Notes;
+
+/***/ },
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+
+	var Note = React.createClass({
+		displayName: 'Note',
+
+		render: function render() {
+			return React.createElement(
+				'li',
+				{ className: 'result list-group-item' },
+				React.createElement(
+					'span',
+					null,
+					this.props.body
+				),
+				React.createElement(
+					'button',
+					{ type: 'button', className: 'pull-right' },
+					'Delete'
+				),
+				React.createElement(
+					'button',
+					{ type: 'button', className: 'pull-right' },
+					'Edit'
+				)
+			);
+		}
+	});
+
+	module.exports = Note;
 
 /***/ }
 /******/ ]);

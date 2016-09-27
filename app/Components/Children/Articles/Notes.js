@@ -1,12 +1,12 @@
 var React = require('react');
-var Result = require('./Articles/Result');
+var Note = require('./Note.js');
 
-var Results = React.createClass({
+var Notes = React.createClass({
 	render: function () {
-		var articles = this.props.articles;
-		var saveArticle = this.props.saveArticle;
+		var notes = this.props.notes;
+		// var saveArticle = this.props.saveArticle;
 		console.log('articles');
-		console.log(articles);
+		console.log(notes);
 
 		return (
 			//<!-- This row will handle all of the retrieved articles -->*/}
@@ -18,18 +18,18 @@ var Results = React.createClass({
 
 						{/*<!-- Panel Heading for the retrieved articles box -->*/}
 						<div className="panel-heading">
-							<h3 className="panel-title"><strong><i className="fa fa-table"></i>   Results</strong></h3>
+							<h3 className="panel-title"><strong><i className="fa fa-table"></i>   Notes</strong></h3>
 						</div>
 
 						{/*<!-- This main panel will hold each of the resulting articles -->*/}
 						<ul className='list-group-item'>
 							{
-								articles.map((article) =>
-									<Result
-										title={article.title}
-										date={article.date}
-										url={article.url}
-										saveArticle={saveArticle}
+								notes.map((note) =>
+									<Note
+										body={note.body}
+										// date={article.date}
+										// url={article.url}
+										// saveArticle={saveArticle}
 									/>
 								)
 							}
@@ -40,4 +40,4 @@ var Results = React.createClass({
 	}
 })
 
-module.exports = Results;
+module.exports = Notes;

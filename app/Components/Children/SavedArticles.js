@@ -29,6 +29,7 @@ var SavedArticles = React.createClass({
 										title={article.title}
 										date={article.date}
 										url={article.url}
+										notes={article.notes}
 										deleteArticle={this.props.deleteArticle}
 										addNote={this.props.addNote}
 										// saveArticle={saveArticle}

@@ -67,7 +67,28 @@ var Main = React.createClass({
 	addNote: function(note, articleId) {
 		console.log('i am in main now');
 		console.log(note);
-		helpers.saveNoteToMongo(note, articleId);
+		helpers.saveNoteToMongo(note, articleId).then(function(results) {
+			console.log('i got this from mongo');
+			console.log(results);
+			var newNotez = results.data;
+			var newNote = {
+				_id: results.data._id,
+				body: results.data.body,
+			}
+			console.log(newNote);
+			var savedArticles = this.state.savedArticles;
+			console.log(savedArticles);
+			savedArticles.forEach(function(article, i) {
+				if (article._id === articleId) {
+					article.notes.push(newNote);
+				}
+			});
+			console.log(savedArticles);
+
+			this.setState({
+				savedArticles: savedArticles
+			});
+		}.bind(this));
 	},
 
 	componentDidUpdate: function(prevProps, prevStates) {
@@ -101,6 +122,17 @@ var Main = React.createClass({
 					console.log('saved not');
 					console.log(data);
 				}.bind(this));
+		}
+
+		//show new note
+		if (prevStates.savedArticles !== this.state.savedArticles) {
+			// helpers.getSavedArticles()
+			// 	.then(function(results) {
+			// 		var savedArticlesArr = results.data;
+			// 		this.setState({
+			// 			savedArticles: savedArticlesArr
+			// 		})
+			// 	}.bind(this));
 		}
 
 		//delete article

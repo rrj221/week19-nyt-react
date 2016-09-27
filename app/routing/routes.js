@@ -10,7 +10,7 @@ module.exports = function (app) {
 	});
 
 	app.get('/saved', function (req, res) {
-		Article.find({}).limit(5).sort([['_id', 'descending']]).exec(function(err, docs) {
+		Article.find({}).populate('notes').limit(5).sort([['_id', 'descending']]).exec(function(err, docs) {
 			res.send(docs);
 		})
 	});
@@ -54,25 +54,17 @@ module.exports = function (app) {
 						if (err) {
 							res.send(err)
 						} else {
+							console.log('newNote');
+							console.log(newNote);
 							res.send(newNote)
 						}
 				});
 			}
 		});
-
-		// Note.create({
-		// 	body: req.body.noteToSave
-		// }, function (err, note) {
-		// 	if (err) {
-		// 		console.log(err);
-		// 	} else {
-		// 		res.send(note);
-		// 	}
-		// })
 	});
 
 
-	app.delete('/article/delete/:id', function (req, res) {
+	app.delete('/articles/delete/:id', function (req, res) {
 		console.log(req.params.id);
 		Article.findOneAndRemove({
 			_id: req.params.id

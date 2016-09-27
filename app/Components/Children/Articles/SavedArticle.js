@@ -1,5 +1,8 @@
 var React = require('react');
 var moment = require('moment');
+var Notes = require('./Notes.js');
+
+var helpers = require('../../utils/helpers.js');
 
 var SavedArticle = React.createClass({
 	// saveClick: function () {
@@ -58,6 +61,10 @@ var SavedArticle = React.createClass({
 						  </div>
 						</div>
 					</form>
+				</li>
+
+				<li className='notes list-group-item'>
+					<Notes notes={this.props.notes} />
 				</li>
 
 			</div>
