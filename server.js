@@ -31,7 +31,8 @@ app.use(express.static('./public'));
 
 
 // MongoDB Configuration
-mongoose.connect('mongodb://localhost/nyt-react');
+mongoose.connect('mongodb://heroku_cd8n74fc:@ds011734.mlab.com:11734/heroku_cd8n74fc');
+// mongoose.connect('mongodb://localhost/nyt-react');
 var db = mongoose.connection;
 
 //MongoDB status
