@@ -47,7 +47,8 @@ var Main = React.createClass({
 		var articleToSave = {
 			title: title,
 			date: date, 
-			url: url
+			url: url,
+			notes: []
 		}
 
 		var savedArticlesTemp = this.state.savedArticles;
@@ -122,17 +123,6 @@ var Main = React.createClass({
 					console.log('saved not');
 					console.log(data);
 				}.bind(this));
-		}
-
-		//show new note
-		if (prevStates.savedArticles !== this.state.savedArticles) {
-			// helpers.getSavedArticles()
-			// 	.then(function(results) {
-			// 		var savedArticlesArr = results.data;
-			// 		this.setState({
-			// 			savedArticles: savedArticlesArr
-			// 		})
-			// 	}.bind(this));
 		}
 
 		//delete article

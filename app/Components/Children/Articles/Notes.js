@@ -2,6 +2,7 @@ var React = require('react');
 var Note = require('./Note.js');
 
 var Notes = React.createClass({
+
 	render: function () {
 		var notes = this.props.notes;
 		// var saveArticle = this.props.saveArticle;
@@ -24,6 +25,7 @@ var Notes = React.createClass({
 						{/*<!-- This main panel will hold each of the resulting articles -->*/}
 						<ul className='list-group-item'>
 							{
+
 								notes.map((note) =>
 									<Note
 										body={note.body}
@@ -32,6 +34,7 @@ var Notes = React.createClass({
 										// saveArticle={saveArticle}
 									/>
 								)
+
 							}
 						</ul>
 				</div>
